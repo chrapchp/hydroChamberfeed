@@ -22,13 +22,13 @@
 // specific write holding registers to unit
 #define FUTURES CUSTOM_HR_START_WRITE
 
-#define B1R1_1A_XY_009 100  // modbus adddress for valve open/close
-#define B1R1_1A_XY_010 101
-#define B1R1_1A_XY_011 102
-#define B1R1_1A_XY_012 103
+#define B1R1_1A_XY_009 86  // modbus adddress for valve open/close
+#define B1R1_1A_XY_010 85
+#define B1R1_1A_XY_011 87
+#define B1R1_1A_XY_012 84
 
 
-
+#define HEART_BEAT 18
 
 // 
 // write analogs/sp specific to units
