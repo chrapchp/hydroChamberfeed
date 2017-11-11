@@ -48,7 +48,7 @@
 #define CHAMBER_RETURN_MCP_ADDRESS 0
 // One Wire - Hydroponic temperatures
 // 
-#define TEMPERATURE1 8 // pin
+#define TEMPERATURE1 12 // pin
 #define TEMPERATURE2 7 // pin
 #define TEMPERATURE3 14 // pin
 #define TEMPERATURE4 4 // pin
