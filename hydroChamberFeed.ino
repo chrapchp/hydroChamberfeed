@@ -12,18 +12,17 @@
 ** 2017Oct30 - created
 */
 #include <HardwareSerial.h>
-#include <TimeAlarms.h>
+
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Wire.h>
 #include <Adafruit_MCP23008.h>
 #include <Streaming.h>
-
+#include <DA_NonBlockingDelay.h>
 #include <DA_Analoginput.h>
 #include <DA_Discreteinput.h>
 #include <DA_DiscreteOutput.h>
-#include <DA_DiscreteOutputTmr.h>
-#include <DA_HOASwitch.h>
+
 #include "unitModbus.h"
 // comment out to  include terminal processing for debugging
 // #define PROCESS_TERMINAL
@@ -74,6 +73,9 @@ DA_AnalogInput B1N1_N3_PT004 = DA_AnalogInput(A7, 0.0, 1023.); // min max
 #ifdef PROCESS_TERMINAL
 DA_DiscreteOutput LED = DA_DiscreteOutput(13, HIGH); // for debugging
 #endif
+// poll I/O every 2 seconds
+DA_NonBlockingDelay pollTimer = DA_NonBlockingDelay( POLL_CYCLE_SECONDS * 1000 , &doOnPoll);
+
 
 Adafruit_MCP23008 chamberReturn;
 // HEARTBEAT
@@ -102,16 +104,8 @@ MCPEntry returnValves[] =
   }
 };
 
-struct _AlarmEntry
-{
-  time_t epoch;
-  AlarmId id = dtINVALID_ALARM_ID;
-  bool firstTime = true;
-};
 
-typedef _AlarmEntry AlarmEntry;
-AlarmEntry onRefreshAnalogs; // sonar and 1-wire read refresh
-AlarmEntry onFlowCalc; // flow calculations
+
 
 #ifdef PROCESS_TERMINAL
 HardwareSerial *tracePort = & Serial2;
@@ -193,7 +187,7 @@ void setup()
 
   setupMCP(); // i2C connection to chamber return
   randomSeed(analogRead(3));
-  onRefreshAnalogs.id = Alarm.timerRepeat(POLL_CYCLE_SECONDS, doOnPoll);
+
   initHydroponicOneWireTemps();
 }
 
@@ -206,7 +200,7 @@ void loop()
   processModbusCommands();
 #endif
 
-  Alarm.delay(ALARM_REFRESH_INTERVAL);
+pollTimer.refresh();
 }
 
 // update sonar and 1-wire DHT-22 readings
